@@ -1,0 +1,239 @@
+<!DOCTYPE HTML><html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  <style>
+    html {
+     font-family: Arial;
+     display: inline-block;
+     margin: 0px auto;
+     text-align: center;
+    }
+    h2 { font-size: 3.0rem; }
+    p { font-size: 3.0rem; }
+    .units { font-size: 1.2rem; }
+    .dht-labels{
+      font-size: 1.5rem;
+      vertical-align:middle;
+      padding-bottom: 15px;
+    }
+
+    .buttons {
+    width: 200px;
+    margin: 0 auto;
+  /*  display: inline;*/
+
+    font-size: 3.0rem;
+    display: block;
+    width: 100%;
+/* background-color: red; */
+
+}
+
+
+#sprava_o_teplote {
+  background-color: black;
+  color: white;
+}
+
+  </style>
+</head>
+<body>
+  <h2>Meranie tepltoty a vlkosti</h2>
+  <p id="teplota_ukaz">
+    <i class="fas fa-thermometer-half" style="color:#059e8a;"></i> 
+    <span class="dht-labels">Teplota</span> 
+    <span id="temperature">%TEMPERATURE%</span>
+    <sup class="units">&deg;C</sup>
+  </p>
+<!-- 
+
+  <p>
+    <i class="fas fa-thermometer-half" style="color:#059e8a;"></i> 
+    <span class="dht-labels">Teplota</span> 
+    <span id="temperature">%TEMPERATURE%</span>
+    <sup class="units">&deg;C</sup>
+  </p>
+-->
+
+  <p >
+    <i class="fas fa-tint" style="color:#00add6;"></i> 
+    <span class="dht-labels">Vlhkost</span>
+    <span id="humidity">%HUMIDITY%</span>
+    <sup class="units">&percnt;</sup>
+  </p>
+
+<p>
+<br>
+    <input type="button" class="buttons" name="" id = "naviac_button" value="zobrazit viac" onclick="zobraz()" />
+   
+</p>
+
+
+  <div class="minmax" id="naviac" style="display: none;">
+
+    <p class="">
+        <span id = "sprava_o_teplote" >sprava o teplote </span>
+
+    </p>
+
+    <p class="">
+        <label for="date" class="out">dolna hranica teploty:</label>
+        <br>
+        <button name="submit" class="buttons" type="submit" value="Save" onclick="zmenM(1)"> - </button>
+        <span id ="minimum_id">%MINIMUM%ss</span>
+        <button name="submit" class="buttons" type="submit" value="Save" onclick="zmenM(2)"> + </button>
+    </p>    
+
+    <p class="">
+        <label for="date" class="out">horna hranica teploty:</label>
+        <br>
+        <button name="submit" class="buttons" type="submit" value="Save" onclick="zmenM(3)"> - </button>
+        <span id ="maximum_id">%MAXIMUM%</span>
+        <button name="submit" class="buttons" type="submit" value="Save" onclick="zmenM(4)"> + </button>
+    </p>
+</div>
+
+
+
+</body>
+<script>
+
+let ukazane = false;
+
+let Tmin = 15;
+let Tmax = 30;
+
+let namerana_teplota = 22 * 1.0;
+
+function zobraz(){
+    if (ukazane == false){
+        ukazane = true;
+        document.getElementById('naviac').style.display = "block";
+        document.getElementById("naviac_button").value = " zobrazit menej" ; 
+
+    }
+
+    else if (ukazane == true){
+        ukazane = false;
+        document.getElementById('naviac').style.display = "none";
+        document.getElementById("naviac_button").value = " zobrazit viac" ; 
+
+    }
+}
+
+function skontroluj(a){
+    // nech chybu este vypisuje navysse mimo hoto modreho
+    if( namerana_teplota < Tmax &&  namerana_teplota > Tmin   ){
+        document.getElementById("teplota_ukaz").style.backgroundColor = "white";
+        document.getElementById("teplota_ukaz").style.color = "black";
+
+        //document.getElementById("teplota_ukaz").style.textcolor = "white";
+        document.getElementById("sprava_o_teplote").innerHTML = String(namerana_teplota) + " je v rozmedzi teploty " ; 
+        document.getElementById("sprava_o_teplote").style.backgroundColor = "black";
+
+
+    }
+
+ //   else if ( namerana_teplota > Tmax &&   namerana_teplota < Tmin){
+    else if ( Tmax < Tmin || Tmin > Tmax ){
+        document.getElementById("teplota_ukaz").style.backgroundColor = "orange";
+//        document.getElementById("teplota_ukaz").innerHTML = "nespravne zadane rozmezie teplot"; 
+// toto radsej nech nepise tam kde ma byt teplota
+document.getElementById("sprava_o_teplote").innerHTML = "nespravne zadane rozmezie teplot"; 
+    }
+    else if(namerana_teplota > Tmax ){
+        document.getElementById("teplota_ukaz").style.backgroundColor = "red";
+        document.getElementById("teplota_ukaz").style.color = "white";
+
+
+        document.getElementById("sprava_o_teplote").style.backgroundColor = "red";
+        document.getElementById("sprava_o_teplote").innerHTML = String(namerana_teplota) + " je prilis horuco" ; 
+
+    }
+
+
+
+    else if(namerana_teplota < Tmin ){
+        document.getElementById("teplota_ukaz").style.backgroundColor = "blue";
+        document.getElementById("teplota_ukaz").style.color = "white";
+
+
+        document.getElementById("sprava_o_teplote").style.backgroundColor = "blue";
+        //document.getElementById("sprava_o_teplote").style.color = "white";
+        document.getElementById("sprava_o_teplote").innerHTML = String(namerana_teplota) + " je prilis chladno"; 
+    }
+
+    else{
+
+    }
+}
+
+function setL(){
+
+    skontroluj(namerana_teplota)
+
+    // document.getElementById("minumum_id").innerHTML = Tmin;
+    //document.getElementById("minimum_id").innerHTML = 20;
+    /*document.getElementById("minimum_id").innerHTML = "abc";
+    asi to musi byt text aby to slo*/
+    let s = String(Tmin)
+    document.getElementById("minimum_id").innerHTML = s;
+     s = String(Tmax)
+    document.getElementById("maximum_id").innerHTML = s;
+
+
+}
+
+function zmenM(a){
+
+    if (a==1) {
+  //  block of code to be executed if condition1 is true
+  Tmin = Tmin -1;
+} else if (a==2) {
+    Tmin = Tmin + 1;
+
+  //  block of code to be executed if the condition1 is false and condition2 is true
+}
+else if (a==3) {
+    Tmax = Tmax -1 ;
+  //  block of code to be executed if the condition1 is false and condition2 is true
+}
+else if (a==4) {
+    Tmax = Tmax + 1 ;
+  //  block of code to be executed if the condition1 is false and condition2 is true
+}
+else {
+  //  block of code to be executed if the condition1 is false and condition2 is false
+}
+
+setL()
+}
+
+
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("temperature").innerHTML = this.responseText;
+      namerana_teplota = int(this.responseText) * 1.0;
+      // chcem nech to je cislo ktore ma aj desatinnu ciarku
+    }
+  };
+  xhttp.open("GET", "/temperature", true);
+  xhttp.send();
+}, 10000 ) ;
+
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById("humidity").innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "/humidity", true);
+  xhttp.send();
+}, 10000 ) ;
+</script>
+</html>
